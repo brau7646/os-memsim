@@ -10,6 +10,7 @@ void allocateVariable(uint32_t pid, std::string var_name, DataType type, uint32_
 void setVariable(uint32_t pid, std::string var_name, uint32_t offset, void *value, Mmu *mmu, PageTable *page_table, void *memory);
 void freeVariable(uint32_t pid, std::string var_name, Mmu *mmu, PageTable *page_table);
 void terminateProcess(uint32_t pid, Mmu *mmu, PageTable *page_table);
+void splitString(std::string text, char d, std::vector<std::string>& result);
 
 int main(int argc, char **argv)
 {
@@ -36,13 +37,67 @@ int main(int argc, char **argv)
     std::string command;
     std::cout << "> ";
     std::getline (std::cin, command);
+    std::vector<std::string> command_args;
     while (command != "exit") {
         // Handle command
         // TODO: implement this!
+        splitString(command, ' ', command_args);
+
+        //Handling each individual command and its arguments
+        //create
+        if (command_args[0].compare("create")==0){
+            createProcess(std::stoi(command_args[1]),std::stoi(command_args[2]),mmu,page_table);
+        }
+        //allocate
+        else if (command_args[0].compare("allocate")==0){
+            //Char, Short, Int, Float, Long, Double
+            DataType type;
+            if (command_args[03].compare("char")==0){
+                type = DataType::Char;
+            }
+            else if (command_args[03].compare("short")==0){
+                type = DataType::Short;
+            }
+            else if (command_args[03].compare("int")==0){
+                type = DataType::Int;
+            }
+            else if (command_args[03].compare("float")==0){
+                type = DataType::Float;
+            }
+            else if (command_args[03].compare("long")==0){
+                type = DataType::Long;
+            }
+            else {
+                type = DataType::Double;
+            }
+        
+            allocateVariable(std::stoul(command_args[1]), command_args[2],DataType::Int,std::stoul(command_args[4]), mmu, page_table);
+        }
+        //set
+        else if (command_args[0].compare("set")==0){
+            setVariable(std::stoul(command_args[1]), command_args[2], std::stoul(command_args[3]), (void*)(command_args[4].c_str()), mmu, page_table, memory);
+        }
+        //free
+        else if (command_args[0].compare("free")==0){
+            freeVariable(std::stoul(command_args[1]), command_args[2], mmu, page_table);
+        }
+        //terminate
+        else if (command_args[0].compare("terminate")==0){
+            terminateProcess(std::stoul(command_args[1]), mmu, page_table);
+        }
+        //print
+        else if (command_args[0].compare("print")==0){
+
+        }
+        //invalid command
+        else {
+            printf("error: command not recognized\n");
+        }
 
         // Get next command
         std::cout << "> ";
         std::getline (std::cin, command);
+        
     }
 
     // Cean up
@@ -74,13 +129,15 @@ void createProcess(int text_size, int data_size, Mmu *mmu, PageTable *page_table
 {
     // TODO: implement this!
     //   - create new process in the MMU
-    mmu->createProcess();
+    uint32_t pid = mmu->createProcess();
     //   - allocate new variables for the <TEXT>, <GLOBALS>, and <STACK>
     //   - print pid
+    std::cout<<pid<<std::endl;
 }
 
 void allocateVariable(uint32_t pid, std::string var_name, DataType type, uint32_t num_elements, Mmu *mmu, PageTable *page_table)
 {
+    //std::cout<<type<<std::endl;
     // TODO: implement this!
     //   - find first free space within a page already allocated to this process that is large enough to fit the new variable
     //   - if no hole is large enough, allocate new page(s)
@@ -109,4 +166,59 @@ void terminateProcess(uint32_t pid, Mmu *mmu, PageTable *page_table)
     // TODO: implement this!
     //   - remove process from MMU
     //   - free all pages associated with given process
+}
+void splitString(std::string text, char d, std::vector<std::string>& result)
+{
+    enum states { NONE, IN_WORD, IN_STRING } state = NONE;
+
+    int i;
+    std::string token;
+    result.clear();
+    for (i = 0; i < text.length(); i++)
+    {
+        char c = text[i];
+        switch (state) {
+            case NONE:
+                if (c != d)
+                {
+                    if (c == '\"')
+                    {
+                        state = IN_STRING;
+                        token = "";
+                    }
+                    else
+                    {
+                        state = IN_WORD;
+                        token = c;
+                    }
+                }
+                break;
+            case IN_WORD:
+                if (c == d)
+                {
+                    result.push_back(token);
+                    state = NONE;
+                }
+                else
+                {
+                    token += c;
+                }
+                break;
+            case IN_STRING:
+                if (c == '\"')
+                {
+                    result.push_back(token);
+                    state = NONE;
+                }
+                else
+                {
+                    token += c;
+                }
+                break;
+        }
+    }
+    if (state != NONE)
+    {
+        result.push_back(token);
+    }
 }

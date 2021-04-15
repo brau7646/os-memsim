@@ -17,7 +17,7 @@ uint32_t Mmu::createProcess()
 
     Variable *var = new Variable();
     var->name = "<FREE_SPACE>";
-    var->type = DataType::FreeSpace;
+    //var->type = DataType::FreeSpace;
     var->virtual_address = 0;
     var->size = _max_size;
     proc->variables.push_back(var);
@@ -62,6 +62,7 @@ void Mmu::print()
         for (j = 0; j < _processes[i]->variables.size(); j++)
         {
             // TODO: print all variables (excluding <FREE_SPACE> entries)
+            //_processes[i]->variables[j]->name;
         }
     }
 }

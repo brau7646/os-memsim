@@ -62,6 +62,15 @@ void Mmu::print()
         for (j = 0; j < _processes[i]->variables.size(); j++)
         {
             // TODO: print all variables (excluding <FREE_SPACE> entries)
+            if (_processes[i]->variables[j]->name.compare("<FREE_SPACE>") != 0)
+            {
+                printf("| %3u | %13s | %13u | %4u\n",
+                _processes[i]->pid,
+                _processes[i]->variables[j]->name.c_str(),
+                _processes[i]->variables[j]->virtual_address,
+                _processes[i]->variables[j]->size);
+            }
+            
             //_processes[i]->variables[j]->name;
         }
     }

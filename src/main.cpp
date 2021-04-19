@@ -87,7 +87,9 @@ int main(int argc, char **argv)
         }
         //print
         else if (command_args[0].compare("print")==0){
-
+            if (command_args[1].compare("mmu")==0){
+                mmu->print();
+            }
         }
         //invalid command
         else {

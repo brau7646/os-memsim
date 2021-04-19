@@ -1,4 +1,5 @@
 #include "mmu.h"
+#include <string>
 
 Mmu::Mmu(int memory_size)
 {
@@ -17,7 +18,7 @@ uint32_t Mmu::createProcess()
 
     Variable *var = new Variable();
     var->name = "<FREE_SPACE>";
-    var->type = DataType::FreeSpace;
+    //var->type = DataType::FreeSpace;
     var->virtual_address = 0;
     var->size = _max_size;
     proc->variables.push_back(var);
@@ -61,6 +62,13 @@ void Mmu::print()
     {
         for (j = 0; j < _processes[i]->variables.size(); j++)
         {
+
+            if(_processes[i]->variables[j]->name.compare("<FREE SPACE>") == 0) //it is not free space
+            {
+
+            std::cout << _processes[i]->pid << " | " << _processes[i]->variables[j]->name << " | " << _processes[i]->variables[j]->virtual_address << " | " << _processes[i]->variables[j]->size;
+
+            }
             // TODO: print all variables (excluding <FREE_SPACE> entries)
             if (_processes[i]->variables[j]->name.compare("<FREE_SPACE>") != 0)
             {

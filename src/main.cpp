@@ -90,6 +90,9 @@ int main(int argc, char **argv)
             if (command_args[1].compare("mmu")==0){
                 mmu->print();
             }
+            else if (command_args[1].compare("page")==0){
+                page_table->print();
+            }
         }
         //invalid command
         else {
@@ -149,10 +152,11 @@ void allocateVariable(uint32_t pid, std::string var_name, DataType type, uint32_
     //std::cout<<type<<std::endl;
     // TODO: implement this!
     //   - find first free space within a page already allocated to this process that is large enough to fit the new variable
-
+    
     //   - if no hole is large enough, allocate new page(s)
 
     //   - insert variable into MMU
+    mmu->addVariableToProcess(pid, var_name, type, num_elements, 0);
 
     //   - print virtual memory address 
 }

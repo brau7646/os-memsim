@@ -87,12 +87,24 @@ int main(int argc, char **argv)
         }
         //print
         else if (command_args[0].compare("print")==0){
-            if (command_args[1].compare("mmu")==0){
+            if(command_args[1].compare("mmu")==0){
                 mmu->print();
             }
-            else if (command_args[1].compare("page")==0){
+            else if(command_args[1].compare("page")==0){
+
                 page_table->print();
             }
+            else if(command_args[1].compare("processes")==0){
+
+
+            }
+            else if(command_args[1].compare("PID:Varname")==0){
+
+            }
+            else{
+                std::cout << "error: command not recognized\n";
+            }
+            
         }
         //invalid command
         else {
@@ -105,7 +117,7 @@ int main(int argc, char **argv)
         
     }
 
-    // Cean up
+    // Clean up
     free(memory);
     delete mmu;
     delete page_table;
@@ -149,23 +161,59 @@ void createProcess(int text_size, int data_size, Mmu *mmu, PageTable *page_table
 
 void allocateVariable(uint32_t pid, std::string var_name, DataType type, uint32_t num_elements, Mmu *mmu, PageTable *page_table)
 {
+    int spaceNeeded;
+    if(type == DataType::Char){
+        spaceNeeded = 1;
+    }
+    else if(type== DataType::Int || type== DataType::Float){
+        spaceNeeded = 4;
+    }
+    else if(type== DataType::Double || type == DataType::Long){
+        spaceNeeded = 8;
+    }
+    else if(type == DataType::Short){
+        spaceNeeded = 2;
+    }
     //std::cout<<type<<std::endl;
     // TODO: implement this!
     //   - find first free space within a page already allocated to this process that is large enough to fit the new variable
-    
+    //page_table.
+    bool foundSpot = false;
+    /*
+    for(int i = 0; i < page_table.){
+        int conseqFreeSpace = 0;
+        if(conseqFreeSpace == spaceNeeded){
+            foundSpot = true;
+        }
+
+
+    }
+    */
+    if(!foundSpot){
+        //allocate new page
+    }
+    int virtualAddress = 0;
+    //page_table->addEntry(pid,12);
     //   - if no hole is large enough, allocate new page(s)
 
     //   - insert variable into MMU
-    mmu->addVariableToProcess(pid, var_name, type, num_elements, 0);
-
+    //mmu->addVariableToProcess(pid,var_name,type,varSize,virtualAddress);
     //   - print virtual memory address 
+    printf("%d",virtualAddress);
 }
 
 void setVariable(uint32_t pid, std::string var_name, uint32_t offset, void *value, Mmu *mmu, PageTable *page_table, void *memory)
 {
     // TODO: implement this!
     //   - look up physical address for variable based on its virtual address / offset
+    int physicalAddress = page_table->getPhysicalAddress(pid,offset);
+    
     //   - insert `value` into `memory` at physical address
+    //memory[physicalAddress] = 
+    //memcpy
+   // memcpy();
+    //
+    //copy from mem into some var for printing
     //   * note: this function only handles a single element (i.e. you'll need to call this within a loop when setting
     //           multiple elements of an array) 
 }

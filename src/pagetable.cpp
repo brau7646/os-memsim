@@ -32,7 +32,10 @@ void PageTable::addEntry(uint32_t pid, int page_number)
     int frame = 0; 
     // Find free frame
     // TODO: implement this!
+    
+
     _table[entry] = frame;
+
 }
 
 int PageTable::getPhysicalAddress(uint32_t pid, uint32_t virtual_address)

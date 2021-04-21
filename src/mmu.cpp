@@ -1,5 +1,6 @@
 #include "mmu.h"
 #include <string>
+#include <algorithm>
 
 Mmu::Mmu(int memory_size)
 {
@@ -51,7 +52,6 @@ void Mmu::addVariableToProcess(uint32_t pid, std::string var_name, DataType type
         proc->variables.push_back(var);
     }
 }
-
 void Mmu::print()
 {
     int i, j;
@@ -80,6 +80,16 @@ void Mmu::print()
             }
             
             //_processes[i]->variables[j]->name;
+        }
+    }
+}
+void Mmu::terminateProcess(uint32_t pid)
+{
+    //std::vector<Process*>::iterator position;
+    for (int i=0; i<_processes.size(); i++){
+        if (_processes[i]->pid == pid){
+            _processes.erase(std::find(_processes.begin(),_processes.end(),_processes[i]));
+            //position = std::find(_processes.begin(),_processes.end(),_processes[i]);
         }
     }
 }

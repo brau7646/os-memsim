@@ -181,6 +181,7 @@ void terminateProcess(uint32_t pid, Mmu *mmu, PageTable *page_table)
 {
     // TODO: implement this!
     //   - remove process from MMU
+    mmu->terminateProcess(pid);
     //   - free all pages associated with given process
 }
 void splitString(std::string text, char d, std::vector<std::string>& result)

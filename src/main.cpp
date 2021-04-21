@@ -87,6 +87,7 @@ int main(int argc, char **argv)
         }
         //print
         else if (command_args[0].compare("print")==0){
+
             if(command_args[1].compare("mmu")==0){
                 mmu->print();
             }
@@ -100,6 +101,8 @@ int main(int argc, char **argv)
             }
             else if(command_args[1].compare("PID:Varname")==0){
 
+                std::vector<std::string> pid_args;
+                splitString(command_args[1],':', pid_args);
             }
             else{
                 std::cout << "error: command not recognized\n";

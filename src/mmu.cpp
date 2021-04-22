@@ -93,3 +93,17 @@ void Mmu::terminateProcess(uint32_t pid)
         }
     }
 }
+uint32_t Mmu::fetchVirtualAddress(uint32_t pid, std::string var_name)
+{
+    int position;
+    for (int i=0; i<_processes.size(); i++){
+        if (_processes[i]->pid == pid){
+            //_processes.erase(std::find(_processes.begin(),_processes.end(),_processes[i]));
+            position = i;
+        }
+    }
+    for (int i=0; i<_processes[position]->variables.size(); i++){
+        
+    }
+    return 0;
+}

@@ -151,7 +151,7 @@ void createProcess(int text_size, int data_size, Mmu *mmu, PageTable *page_table
 {
     // TODO: implement this!
     //   - create new process in the MMU
-    uint32_t pid = mmu->createProcess();
+    int pid = mmu->createProcess();
     //   - allocate new variables for the <TEXT>, <GLOBALS>, and <STACK>
     //load that file into memory (<TEXT>)
     allocateVariable(pid,"<TEXT>", DataType::Char,text_size,mmu,page_table);
@@ -161,7 +161,7 @@ void createProcess(int text_size, int data_size, Mmu *mmu, PageTable *page_table
     allocateVariable(pid,"<STACK>", DataType::Char,65536,mmu,page_table);
     //
     //   - print pid
-    std::cout<<pid<<std::endl;
+    printf("%d\n",pid);
 }
 
 void allocateVariable(uint32_t pid, std::string var_name, DataType type, uint32_t num_elements, Mmu *mmu, PageTable *page_table)
@@ -184,27 +184,17 @@ void allocateVariable(uint32_t pid, std::string var_name, DataType type, uint32_
     //   - find first free space within a page already allocated to this process that is large enough to fit the new variable
     //page_table.
     bool foundSpot = false;
-    /*
-    for(int i = 0; i < page_table.){
-        int conseqFreeSpace = 0;
-        if(conseqFreeSpace == spaceNeeded){
-            foundSpot = true;
-        }
 
-
-    }
-    */
-    if(!foundSpot){
-        //allocate new page
-    }
-    int virtualAddress = 0;
+    //allocate new page
     //page_table->addEntry(pid,12);
     //   - if no hole is large enough, allocate new page(s)
-
     //   - insert variable into MMU
-    //mmu->addVariableToProcess(pid,var_name,type,varSize,virtualAddress);
+    int virtualAddress = mmu->findNextAddress(pid,spaceNeeded);
+
+    mmu->addVariableToProcess(pid,var_name,type,spaceNeeded,virtualAddress);
+    page_table->addEntry(pid,virtualAddress);
     //   - print virtual memory address 
-    printf("%d",virtualAddress);
+    //printf("\nVirtual address: %d\n",virtualAddress);
 }
 
 void setVariable(uint32_t pid, std::string var_name, uint32_t offset, void *value, Mmu *mmu, PageTable *page_table, void *memory)

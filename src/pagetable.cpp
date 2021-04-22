@@ -33,10 +33,25 @@ void PageTable::addEntry(uint32_t pid, int page_number)
     // Find free frame
     // TODO: implement this!
     std::map<std::string, int>::iterator it;
-    for (it = _table.begin(); it != _table.end(); it++)
-    {
+    //bool frame_found = false;
+    while(true){
+
+        std::vector<std::string> keys = sortedKeys();
+        bool frame_is_free = true;
+        for (int i = 0; i < keys.size(); i++)
+        {
+            if (_table[keys[i]]==frame){
+                frame_is_free = false;
+                break;
+            }
+        }
+        if (frame_is_free){
+            break;
+        } else {
+            frame++;
+        }
         
-    }    
+    }
 
     _table[entry] = frame;
 

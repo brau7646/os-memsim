@@ -99,13 +99,15 @@ int main(int argc, char **argv)
 
 
             }
-            else if(command_args[1].compare("PID:Varname")==0){
-
+            else{
                 std::vector<std::string> pid_args;
                 splitString(command_args[1],':', pid_args);
-            }
-            else{
-                std::cout << "error: command not recognized\n";
+                uint32_t var_virtual_address = mmu->fetchVirtualAddress(std::stoul(command_args[0]), pid_args[1]);
+                uint32_t var_physical_address = page_table->getPhysicalAddress(std::stoul(command_args[0]),var_virtual_address);
+                //std::string var_value;
+                //memory[var_physical_address];
+                //std::cout<<memory[var_physical_address].c_str()<<std::endl;
+                //printf("%p\n",memory[var_physical_address]);
             }
             
         }
@@ -166,16 +168,16 @@ void allocateVariable(uint32_t pid, std::string var_name, DataType type, uint32_
 {
     int spaceNeeded;
     if(type == DataType::Char){
-        spaceNeeded = 1;
+        spaceNeeded = 1 * num_elements;
     }
     else if(type== DataType::Int || type== DataType::Float){
-        spaceNeeded = 4;
+        spaceNeeded = 4 * num_elements;
     }
     else if(type== DataType::Double || type == DataType::Long){
-        spaceNeeded = 8;
+        spaceNeeded = 8 * num_elements;
     }
     else if(type == DataType::Short){
-        spaceNeeded = 2;
+        spaceNeeded = 2 * num_elements;
     }
     //std::cout<<type<<std::endl;
     // TODO: implement this!

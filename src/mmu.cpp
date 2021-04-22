@@ -103,7 +103,9 @@ uint32_t Mmu::fetchVirtualAddress(uint32_t pid, std::string var_name)
         }
     }
     for (int i=0; i<_processes[position]->variables.size(); i++){
-        
+        if (_processes[position]->variables[i]->name.compare(var_name)==0){
+            return _processes[position]->variables[i]->virtual_address;
+        }
     }
-    return 0;
+    return -1;
 }

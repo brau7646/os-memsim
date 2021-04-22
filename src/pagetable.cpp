@@ -28,11 +28,15 @@ void PageTable::addEntry(uint32_t pid, int page_number)
 {
     // Combination of pid and page number act as the key to look up frame number
     std::string entry = std::to_string(pid) + "|" + std::to_string(page_number);
-
+    //check if page already exists
     int frame = 0; 
     // Find free frame
     // TODO: implement this!
-    
+    std::map<std::string, int>::iterator it;
+    for (it = _table.begin(); it != _table.end(); it++)
+    {
+        
+    }    
 
     _table[entry] = frame;
 
@@ -73,6 +77,6 @@ void PageTable::print()
     for (i = 0; i < keys.size(); i++)
     {
         // TODO: print all pages
-        std::cout<<keys[i]<<std::endl;
+        std::cout<<keys[i]<<" "<<_table[keys[i]]<<std::endl;
     }
 }

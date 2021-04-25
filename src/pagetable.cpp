@@ -95,3 +95,11 @@ void PageTable::print()
         std::cout<<keys[i]<<" "<<_table[keys[i]]<<std::endl;
     }
 }
+int PageTable::getNumberOfPages()
+{
+    return _table.size();
+}
+int PageTable::getPageSize()
+{
+    return _page_size;
+}

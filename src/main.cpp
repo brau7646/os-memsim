@@ -71,7 +71,7 @@ int main(int argc, char **argv)
                 type = DataType::Double;
             }
         
-            allocateVariable(std::stoul(command_args[1]), command_args[2],DataType::Int,std::stoul(command_args[4]), mmu, page_table);
+            allocateVariable(std::stoul(command_args[1]), command_args[2],type,std::stoul(command_args[4]), mmu, page_table);
         }
         //set
         else if (command_args[0].compare("set")==0){
@@ -192,7 +192,20 @@ void allocateVariable(uint32_t pid, std::string var_name, DataType type, uint32_
     int virtualAddress = mmu->findNextAddress(pid,spaceNeeded);
 
     mmu->addVariableToProcess(pid,var_name,type,spaceNeeded,virtualAddress);
-    page_table->addEntry(pid,virtualAddress);
+    /*
+    if (((virtualAddress+spaceNeeded)/page_table->getPageSize()) > page_table->getNumberOfPages()){
+        int currentPages = page_table->getNumberOfPages();
+        while (currentPages < )
+    }
+    */
+    int currentPages = page_table->getNumberOfPages()+1;
+    while (currentPages < (virtualAddress+spaceNeeded)/page_table->getPageSize()){
+        page_table->addEntry(pid,currentPages);
+        currentPages++;
+    }
+    //page_table->addEntry(pid,virtualAddress);
+
+
     //   - print virtual memory address 
     //printf("\nVirtual address: %d\n",virtualAddress);
 }

@@ -36,7 +36,6 @@ public:
     uint32_t fetchVirtualAddress(uint32_t pid, std::string var_name);
     uint32_t findNextAddress(uint32_t pid, uint32_t size);
 
-
 };
 
 #endif // __MMU_H_

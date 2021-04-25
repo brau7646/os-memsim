@@ -208,6 +208,7 @@ void allocateVariable(uint32_t pid, std::string var_name, DataType type, uint32_
 
     //   - print virtual memory address 
     //printf("\nVirtual address: %d\n",virtualAddress);
+    printf("Pages: %d\n",page_table->getNumberOfPages());
 }
 
 void setVariable(uint32_t pid, std::string var_name, uint32_t offset, void *value, Mmu *mmu, PageTable *page_table, void *memory)

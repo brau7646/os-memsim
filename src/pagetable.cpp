@@ -95,7 +95,7 @@ void PageTable::print()
         std::cout<<keys[i]<<" "<<_table[keys[i]]<<std::endl;
     }
 }
-int PageTable::getNumberOfPages()
+int PageTable::getNumberOfPages(uint32_t pid)
 {
     return _table.size();
 }

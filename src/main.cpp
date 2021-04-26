@@ -179,36 +179,17 @@ void allocateVariable(uint32_t pid, std::string var_name, DataType type, uint32_
     else if(type == DataType::Short){
         spaceNeeded = 2 * num_elements;
     }
-    //std::cout<<type<<std::endl;
-    // TODO: implement this!
-    //   - find first free space within a page already allocated to this process that is large enough to fit the new variable
-    //page_table.
-    bool foundSpot = false;
-
-    //allocate new page
-    //page_table->addEntry(pid,12);
-    //   - if no hole is large enough, allocate new page(s)
-    //   - insert variable into MMU
     int virtualAddress = mmu->findNextAddress(pid,spaceNeeded);
-
     mmu->addVariableToProcess(pid,var_name,type,spaceNeeded,virtualAddress);
-    /*
-    if (((virtualAddress+spaceNeeded)/page_table->getPageSize()) > page_table->getNumberOfPages()){
-        int currentPages = page_table->getNumberOfPages();
-        while (currentPages < )
+    
+    int i = 0;
+    //std::cout<<virtualAddress+spaceNeeded<<std::endl;
+    while (i <= (virtualAddress+spaceNeeded)/page_table->getPageSize()){
+        page_table->addEntry(pid,i);
+        i++;
     }
-    */
-    int currentPages = page_table->getNumberOfPages()+1;
-    while (currentPages < (virtualAddress+spaceNeeded)/page_table->getPageSize()){
-        page_table->addEntry(pid,currentPages);
-        currentPages++;
-    }
-    //page_table->addEntry(pid,virtualAddress);
-
-
-    //   - print virtual memory address 
     //printf("\nVirtual address: %d\n",virtualAddress);
-    printf("Pages: %d\n",page_table->getNumberOfPages());
+    
 }
 
 void setVariable(uint32_t pid, std::string var_name, uint32_t offset, void *value, Mmu *mmu, PageTable *page_table, void *memory)

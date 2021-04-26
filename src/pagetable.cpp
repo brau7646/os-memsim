@@ -28,32 +28,35 @@ void PageTable::addEntry(uint32_t pid, int page_number)
 {
     // Combination of pid and page number act as the key to look up frame number
     std::string entry = std::to_string(pid) + "|" + std::to_string(page_number);
-    //check if page already exists
-    int frame = 0; 
-    // Find free frame
-    // TODO: implement this!
-    std::map<std::string, int>::iterator it;
-    //bool frame_found = false;
-    while(true){
-
-        std::vector<std::string> keys = sortedKeys();
-        bool frame_is_free = true;
-        for (int i = 0; i < keys.size(); i++)
-        {
-            if (_table[keys[i]]==frame){
-                frame_is_free = false;
-                break;
-            }
-        }
-        if (frame_is_free){
-            break;
-        } else {
-            frame++;
-        }
+    if (_table.count(entry)==0){
         
-    }
+        //check if page already exists
+        int frame = 0; 
+        // Find free frame
+        // TODO: implement this!
+        std::map<std::string, int>::iterator it;
+        //bool frame_found = false;
+        while(true){
 
-    _table[entry] = frame;
+            std::vector<std::string> keys = sortedKeys();
+            bool frame_is_free = true;
+            for (int i = 0; i < keys.size(); i++)
+            {
+                if (_table[keys[i]]==frame){
+                    frame_is_free = false;
+                    break;
+                }
+            }
+            if (frame_is_free){
+                break;
+            } else {
+                frame++;
+            }
+        
+        }
+        _table[entry] = frame;
+    }
+    
 
 }
 
@@ -90,10 +93,15 @@ void PageTable::print()
     std::cout << "------+-------------+--------------" << std::endl;
 
     std::vector<std::string> keys = sortedKeys();
+    printf("key size: %ld\n",keys.size());
 
     for (i = 0; i < keys.size(); i++)
     {
         // TODO: print all pages
         std::cout<<keys[i]<<" "<<_table[keys[i]]<<std::endl;
     }
+}
+int PageTable::getPageSize()
+{
+    return _page_size;
 }

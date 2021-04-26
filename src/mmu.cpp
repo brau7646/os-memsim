@@ -139,3 +139,15 @@ uint32_t Mmu::findNextAddress(uint32_t pid, uint32_t size)
     }
     return 0;
 }
+int Mmu::getLastVariable(uint32_t pid)
+{
+    int position;
+    for (int i=0; i<_processes.size(); i++){
+        if (_processes[i]->pid == pid){
+            position = i;
+        }
+    }
+    //std::cout<<position<<std::endl;
+    int numVars = _processes[position]->variables.size();
+    return _processes[position]->variables[numVars-1]->virtual_address+_processes[position]->variables[numVars-1]->size-1;
+}

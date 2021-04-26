@@ -52,7 +52,6 @@ void Mmu::addVariableToProcess(uint32_t pid, std::string var_name, DataType type
         proc->variables.push_back(var);
     }
 }
-
 void Mmu::print()
 {
     int i, j;
@@ -64,7 +63,7 @@ void Mmu::print()
         for (j = 0; j < _processes[i]->variables.size(); j++)
         {
 
-            if(_processes[i]->variables[j]->name.compare("<FREE SPACE>") == 0) //it is not free space
+            if(_processes[i]->variables[j]->name.compare("<FREE SPACE>") == 0) //it is free space
             {
 
             std::cout << _processes[i]->pid << " | " << _processes[i]->variables[j]->name << " | " << _processes[i]->variables[j]->virtual_address << " | " << _processes[i]->variables[j]->size;

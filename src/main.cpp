@@ -102,8 +102,10 @@ int main(int argc, char **argv)
             else{
                 std::vector<std::string> pid_args;
                 splitString(command_args[1],':', pid_args);
-                uint32_t var_virtual_address = mmu->fetchVirtualAddress(std::stoul(command_args[0]), pid_args[1]);
-                uint32_t var_physical_address = page_table->getPhysicalAddress(std::stoul(command_args[0]),var_virtual_address);
+                int varPid  = std::stoi(pid_args[0]);
+            
+                uint32_t var_virtual_address = mmu->fetchVirtualAddress(varPid, pid_args[1]);
+                uint32_t var_physical_address = page_table->getPhysicalAddress(varPid,var_virtual_address);
                 //std::string var_value;
                 //memory[var_physical_address];
                 //std::cout<<memory[var_physical_address].c_str()<<std::endl;
@@ -194,21 +196,30 @@ void allocateVariable(uint32_t pid, std::string var_name, DataType type, uint32_
     mmu->addVariableToProcess(pid,var_name,type,spaceNeeded,virtualAddress);
     page_table->addEntry(pid,virtualAddress);
     //   - print virtual memory address 
-    //printf("\nVirtual address: %d\n",virtualAddress);
+    printf("\nVirtual address: %d\n",virtualAddress);
 }
 
 void setVariable(uint32_t pid, std::string var_name, uint32_t offset, void *value, Mmu *mmu, PageTable *page_table, void *memory)
 {
-    // TODO: implement this!
-    //   - look up physical address for variable based on its virtual address / offset
-    int physicalAddress = page_table->getPhysicalAddress(pid,offset);
     
+    //   - look up physical address for variable based on its virtual address / offset
+    
+    uint32_t vA = mmu->fetchVirtualAddress(pid, var_name);
+    uint32_t addr = vA + offset;
+    int physicalAddress = page_table->getPhysicalAddress(pid,addr);
+    printf("%d\n",physicalAddress);
+    void* add = &memory;
+    //void* writeLoc = add + addr;
     //   - insert `value` into `memory` at physical address
-    //memory[physicalAddress] = 
-    //memcpy
-   // memcpy();
-    //
+   
+    //printf("%ld\n", sizeof(value));
+    //printf("%p\n", value)
+    //memcpy(,value,sizeof(value));
+   
     //copy from mem into some var for printing
+    void* printVar;
+    //memcpy(printVar,(&memory+addr),sizeof(&memory+addr));
+    //printf("%p\n",printVar);
     //   * note: this function only handles a single element (i.e. you'll need to call this within a loop when setting
     //           multiple elements of an array) 
 }

@@ -44,8 +44,11 @@ int main(int argc, char **argv)
         splitString(command, ' ', command_args);
 
         //Handling each individual command and its arguments
+        if (command.compare("")==0){
+
+        }
         //create
-        if (command_args[0].compare("create")==0){
+        else if (command_args[0].compare("create")==0){
             createProcess(std::stoi(command_args[1]),std::stoi(command_args[2]),mmu,page_table);
         }
         //allocate
@@ -221,6 +224,8 @@ void terminateProcess(uint32_t pid, Mmu *mmu, PageTable *page_table)
     //   - remove process from MMU
     mmu->terminateProcess(pid);
     //   - free all pages associated with given process
+    page_table->removeProcess(pid);
+
 }
 void splitString(std::string text, char d, std::vector<std::string>& result)
 {

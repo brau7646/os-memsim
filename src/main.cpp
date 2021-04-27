@@ -128,8 +128,7 @@ int main(int argc, char **argv)
                 page_table->print();
             }
             else if(command_args[1].compare("processes")==0){
-
-
+                mmu->printProcesses();
             }
             else{
                 std::vector<std::string> pid_args;
@@ -203,6 +202,10 @@ void allocateVariable(uint32_t pid, std::string var_name, DataType type, uint32_
         printf("error: variable already exists\n");
         return;
     }
+    if (!mmu->doesProcessExist(pid)){
+        printf("error: process not found\n");
+        return;
+    }
     int spaceNeeded;
     if(type == DataType::Char){
         spaceNeeded = 1 * num_elements;
@@ -254,6 +257,10 @@ void freeVariable(uint32_t pid, std::string var_name, Mmu *mmu, PageTable *page_
 
 void terminateProcess(uint32_t pid, Mmu *mmu, PageTable *page_table)
 {
+    if (!mmu->doesProcessExist(pid)){
+        printf("error: process not found\n");
+        return;
+    }
     // TODO: implement this!
     //   - remove process from MMU
     mmu->terminateProcess(pid);

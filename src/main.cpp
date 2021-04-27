@@ -220,10 +220,13 @@ void allocateVariable(uint32_t pid, std::string var_name, DataType type, uint32_
         spaceNeeded = 2 * num_elements;
     }
     int virtualAddress = mmu->findNextAddress(pid,spaceNeeded);
+    if (virtualAddress + spaceNeeded > 67108864){
+        printf("error: allocation would exceed system memory");
+        return;
+    }
     mmu->addVariableToProcess(pid,var_name,type,spaceNeeded,virtualAddress);
     
     int i = 0;
-    //std::cout<<virtualAddress+spaceNeeded<<std::endl;
     while (i <= (virtualAddress+spaceNeeded)/page_table->getPageSize()){
         page_table->addEntry(pid,i);
         i++;

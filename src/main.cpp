@@ -49,12 +49,21 @@ int main(int argc, char **argv)
         }
         //create
         else if (command_args[0].compare("create")==0){
+            if (command_args.size()<3){
+                printf("error: not enough parameters\n");
+            }
+            else {
             createProcess(std::stoi(command_args[1]),std::stoi(command_args[2]),mmu,page_table);
+            }
         }
         //allocate
         else if (command_args[0].compare("allocate")==0){
+            if (command_args.size()<5){
+                printf("error: not enough parameters\n");
+            }
+            else {
             //Char, Short, Int, Float, Long, Double
-            DataType type;
+                DataType type;
             if (command_args[03].compare("char")==0){
                 type = DataType::Char;
             }
@@ -75,22 +84,42 @@ int main(int argc, char **argv)
             }
         
             allocateVariable(std::stoul(command_args[1]), command_args[2],type,std::stoul(command_args[4]), mmu, page_table);
+            std::cout<<mmu->fetchVirtualAddress(std::stoul(command_args[1]),command_args[2])<<std::endl;
+            }
         }
         //set
         else if (command_args[0].compare("set")==0){
+            if (command_args.size()<5){
+                printf("error: not enough parameters\n");
+            }
+            else {
             setVariable(std::stoul(command_args[1]), command_args[2], std::stoul(command_args[3]), (void*)(command_args[4].c_str()), mmu, page_table, memory);
+            }
         }
         //free
         else if (command_args[0].compare("free")==0){
+            if (command_args.size()<3){
+                printf("error: not enough parameters\n");
+            }
+            else {
             freeVariable(std::stoul(command_args[1]), command_args[2], mmu, page_table);
+            }
         }
         //terminate
         else if (command_args[0].compare("terminate")==0){
+            if (command_args.size()<2){
+                printf("error: not enough parameters\n");
+            }
+            else {
             terminateProcess(std::stoul(command_args[1]), mmu, page_table);
+            }
         }
         //print
         else if (command_args[0].compare("print")==0){
-
+            if (command_args.size()<2){
+                printf("error: not enough parameters\n");
+            }
+            else {
             if(command_args[1].compare("mmu")==0){
                 mmu->print();
             }
@@ -111,6 +140,7 @@ int main(int argc, char **argv)
                 //memory[var_physical_address];
                 //std::cout<<memory[var_physical_address].c_str()<<std::endl;
                 //printf("%p\n",memory[var_physical_address]);
+            }
             }
             
         }
@@ -169,6 +199,10 @@ void createProcess(int text_size, int data_size, Mmu *mmu, PageTable *page_table
 
 void allocateVariable(uint32_t pid, std::string var_name, DataType type, uint32_t num_elements, Mmu *mmu, PageTable *page_table)
 {
+    if (mmu->fetchVirtualAddress(pid,var_name)!=-1){
+        printf("error: variable already exists\n");
+        return;
+    }
     int spaceNeeded;
     if(type == DataType::Char){
         spaceNeeded = 1 * num_elements;
@@ -191,7 +225,7 @@ void allocateVariable(uint32_t pid, std::string var_name, DataType type, uint32_
         page_table->addEntry(pid,i);
         i++;
     }
-    //printf("\nVirtual address: %d\n",virtualAddress);
+    
     
 }
 

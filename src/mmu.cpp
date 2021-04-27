@@ -1,6 +1,7 @@
 #include "mmu.h"
 #include <string>
 #include <algorithm>
+#include <iostream>
 
 Mmu::Mmu(int memory_size)
 {
@@ -62,20 +63,26 @@ void Mmu::print()
     {
         for (j = 0; j < _processes[i]->variables.size(); j++)
         {
-
+            /*
             if(_processes[i]->variables[j]->name.compare("<FREE SPACE>") == 0) //it is free space
             {
 
-            std::cout << _processes[i]->pid << " | " << _processes[i]->variables[j]->name << " | " << _processes[i]->variables[j]->virtual_address << " | " << _processes[i]->variables[j]->size;
+            std::cout << _processes[i]->pid << " | " << _processes[i]->variables[j]->name << " | " << _processes[i]->variables[j]->virtual_address;
+            std::cout << " | " << _processes[i]->variables[j]->size << std::endl;
 
             }
+            */
             // TODO: print all variables (excluding <FREE_SPACE> entries)
             if (_processes[i]->variables[j]->name.compare("<FREE_SPACE>") != 0)
             {
-                printf(" %3u | %13s | %12u | %10u\n",
+                printf(" %3u | %13s |",
                 _processes[i]->pid,
-                _processes[i]->variables[j]->name.c_str(),
-                _processes[i]->variables[j]->virtual_address,
+                _processes[i]->variables[j]->name.c_str()
+                );
+                printf(" %#012x |",
+                _processes[i]->variables[j]->virtual_address
+                );
+                printf(" %10u\n",
                 _processes[i]->variables[j]->size);
             }
             
@@ -89,7 +96,6 @@ void Mmu::terminateProcess(uint32_t pid)
     for (int i=0; i<_processes.size(); i++){
         if (_processes[i]->pid == pid){
             _processes.erase(std::find(_processes.begin(),_processes.end(),_processes[i]));
-            //position = std::find(_processes.begin(),_processes.end(),_processes[i]);
         }
     }
 }

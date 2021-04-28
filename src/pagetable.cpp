@@ -91,7 +91,7 @@ void PageTable::print()
     std::cout << "------+-------------+--------------" << std::endl;
 
     std::vector<std::string> keys = sortedKeys();
-    printf("key size: %ld\n",keys.size());
+    //printf("key size: %ld\n",keys.size());
 
     for (i = 0; i < keys.size(); i++)
     {

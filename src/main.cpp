@@ -72,6 +72,8 @@ int main(int argc, char **argv)
             }
         
             allocateVariable(std::stoul(command_args[1]), command_args[2],type,std::stoul(command_args[4]), mmu, page_table);
+            printf("%d\n",mmu->fetchVirtualAddress(std::stoul(command_args[1]),command_args[2]));
+
         }
         //set
         else if (command_args[0].compare("set")==0){
@@ -100,14 +102,22 @@ int main(int argc, char **argv)
 
             }
             else{
+                
                 std::vector<std::string> pid_args;
                 splitString(command_args[1],':', pid_args);
-                uint32_t var_virtual_address = mmu->fetchVirtualAddress(std::stoul(command_args[0]), pid_args[1]);
-                uint32_t var_physical_address = page_table->getPhysicalAddress(std::stoul(command_args[0]),var_virtual_address);
+                //int Npid = std::stoui(command_args);
+                uint32_t var_virtual_address = mmu->fetchVirtualAddress(std::stoul(pid_args[0]), pid_args[1]);
+                uint32_t var_physical_address = page_table->getPhysicalAddress(std::stoul(pid_args[0]),var_virtual_address);
                 //std::string var_value;
                 //memory[var_physical_address];
                 //std::cout<<memory[var_physical_address].c_str()<<std::endl;
                 //printf("%p\n",memory[var_physical_address]);
+                void* addr = memory + var_physical_address;
+                void* printVar;
+                uint8_t copySize = mmu->getVarDataType(std::stoi(pid_args[0]),pid_args[1]);
+                memcpy(&printVar,addr,copySize);
+
+                printf("%d\n",printVar);
             }
             
         }
@@ -190,20 +200,37 @@ void allocateVariable(uint32_t pid, std::string var_name, DataType type, uint32_
     }
     //printf("\nVirtual address: %d\n",virtualAddress);
     
+    
 }
 
 void setVariable(uint32_t pid, std::string var_name, uint32_t offset, void *value, Mmu *mmu, PageTable *page_table, void *memory)
 {
-    // TODO: implement this!
-    //   - look up physical address for variable based on its virtual address / offset
-    int physicalAddress = page_table->getPhysicalAddress(pid,offset);
     
+    //   - look up physical address for variable based on its virtual address / offset
+    
+    uint32_t vA = mmu->fetchVirtualAddress(pid, var_name);
+    if(vA == -1){
+        puts("error: variable not found");
+        return;
+    }
+    uint32_t addr = vA + offset;
+    int physicalAddress = page_table->getPhysicalAddress(pid,addr);
+    //printf("%d\n",physicalAddress);
+    uint8_t dataSize = mmu->getVarDataType(pid, var_name);
+    void* add = (uint8_t*)memory + physicalAddress;
+    //void* writeLoc = add + addr;
     //   - insert `value` into `memory` at physical address
-    //memory[physicalAddress] = 
-    //memcpy
-   // memcpy();
-    //
+   
+    //printf("%ld\n", sizeof(value));
+    //printf("%p\n", value)
+    memcpy(add,value,dataSize);
+   
     //copy from mem into some var for printing
+    void* printVar;
+    memcpy(&printVar,add,dataSize);
+    //memcpy(printVar,(&memory+addr),sizeof(&memory+addr));
+    int* test = (int*)printVar;
+    printf("%p\n",printVar);
     //   * note: this function only handles a single element (i.e. you'll need to call this within a loop when setting
     //           multiple elements of an array) 
 }

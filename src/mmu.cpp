@@ -150,3 +150,36 @@ int Mmu::getLastVariable(uint32_t pid)
     int numVars = _processes[position]->variables.size();
     return _processes[position]->variables[numVars-1]->virtual_address+_processes[position]->variables[numVars-1]->size-1;
 }
+
+uint8_t Mmu::getVarDataType(uint32_t pid, std::string var_name){
+
+    uint8_t dataSize;
+    int position;
+    for (int i=0; i<_processes.size(); i++){
+        if (_processes[i]->pid == pid){
+            //_processes.erase(std::find(_processes.begin(),_processes.end(),_processes[i]));
+            position = i;
+        }
+    }
+    for (int i=0; i<_processes[position]->variables.size(); i++){
+        if (_processes[position]->variables[i]->name.compare(var_name)==0){
+            DataType dType =  _processes[position]->variables[i]->type;
+
+            if(dType == DataType::Char){
+                dataSize = 1;
+            }
+            else if(dType== DataType::Int || dType== DataType::Float){
+                dataSize = 4;
+            }
+            else if(dType== DataType::Double || dType == DataType::Long){
+                dataSize = 8;
+            }
+            else if(dType == DataType::Short){
+                dataSize = 2;
+            }
+            return dataSize;
+        }
+    }
+    return -1;
+
+}

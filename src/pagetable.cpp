@@ -1,4 +1,5 @@
 #include "pagetable.h"
+#include <string>
 
 PageTable::PageTable(int page_size)
 {
@@ -91,15 +92,30 @@ void PageTable::print()
     std::cout << "------+-------------+--------------" << std::endl;
 
     std::vector<std::string> keys = sortedKeys();
-    //printf("key size: %ld\n",keys.size());
 
     for (i = 0; i < keys.size(); i++)
     {
         // TODO: print all pages
-        std::cout<<keys[i]<<" "<<_table[keys[i]]<<std::endl;
+        //std::cout<<keys[i]<<" "<<_table[keys[i]]<<std::endl;
+        std::string pid = keys[i].substr(0,keys[i].find('|'));
+        std::string pageNum = keys[i].substr(keys[i].find('|')+1);
+
+        //std::cout<<pid<<" "<<pageNum<<std::endl;
+        printf(" %4s | %11s | %12d\n",pid.c_str(), pageNum.c_str(), _table[keys[i]]);
+        
     }
 }
 int PageTable::getPageSize()
 {
     return _page_size;
+}
+void PageTable::removeProcess(uint32_t pid)
+{
+    int curPage = 0;
+    std::string entry = std::to_string(pid) + "|" + std::to_string(curPage);
+    while (_table.count(entry) > 0){
+        _table.erase(entry);
+        curPage++;
+        entry = std::to_string(pid) + "|" + std::to_string(curPage);
+    }
 }

@@ -36,9 +36,14 @@ public:
     uint32_t fetchVirtualAddress(uint32_t pid, std::string var_name);
     uint32_t findNextAddress(uint32_t pid, uint32_t size);
     int getLastVariable(uint32_t pid);
+<<<<<<< HEAD
     uint8_t getVarDataType(uint32_t pid, std::string var_name);
 
 
+=======
+    bool doesProcessExist(uint32_t pid);
+    void printProcesses();
+>>>>>>> 175ab85825f4e564a69b85bdb065983f8bac4319
 };
 
 #endif // __MMU_H_

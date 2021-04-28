@@ -44,52 +44,83 @@ int main(int argc, char **argv)
         splitString(command, ' ', command_args);
 
         //Handling each individual command and its arguments
+        if (command.compare("")==0){
+
+        }
         //create
-        if (command_args[0].compare("create")==0){
+        else if (command_args[0].compare("create")==0){
+            if (command_args.size()<3){
+                printf("error: not enough parameters\n");
+            }
+            else {
             createProcess(std::stoi(command_args[1]),std::stoi(command_args[2]),mmu,page_table);
+            }
         }
         //allocate
         else if (command_args[0].compare("allocate")==0){
-            //Char, Short, Int, Float, Long, Double
-            DataType type;
-            if (command_args[03].compare("char")==0){
-                type = DataType::Char;
-            }
-            else if (command_args[03].compare("short")==0){
-                type = DataType::Short;
-            }
-            else if (command_args[03].compare("int")==0){
-                type = DataType::Int;
-            }
-            else if (command_args[03].compare("float")==0){
-                type = DataType::Float;
-            }
-            else if (command_args[03].compare("long")==0){
-                type = DataType::Long;
+            if (command_args.size()<5){
+                printf("error: not enough parameters\n");
             }
             else {
-                type = DataType::Double;
+            //Char, Short, Int, Float, Long, Double
+                DataType type;
+            
+                if (command_args[03].compare("char")==0){
+                    type = DataType::Char;
+                }
+                else if (command_args[03].compare("short")==0){
+                    type = DataType::Short;
+                }
+                else if (command_args[03].compare("int")==0){
+                    type = DataType::Int;
+                }
+                else if (command_args[03].compare("float")==0){
+                    type = DataType::Float;
+                }
+                else if (command_args[03].compare("long")==0){
+                    type = DataType::Long;
+                }
+                else {
+                    type = DataType::Double;
+                }
+            
+                allocateVariable(std::stoul(command_args[1]), command_args[2],type,std::stoul(command_args[4]), mmu, page_table);
+                printf("%d\n",mmu->fetchVirtualAddress(std::stoul(command_args[1]),command_args[2]));
             }
-        
-            allocateVariable(std::stoul(command_args[1]), command_args[2],type,std::stoul(command_args[4]), mmu, page_table);
-            printf("%d\n",mmu->fetchVirtualAddress(std::stoul(command_args[1]),command_args[2]));
-
         }
         //set
         else if (command_args[0].compare("set")==0){
+            if (command_args.size()<5){
+                printf("error: not enough parameters\n");
+            }
+            else {
             setVariable(std::stoul(command_args[1]), command_args[2], std::stoul(command_args[3]), (void*)(command_args[4].c_str()), mmu, page_table, memory);
+            }
         }
         //free
         else if (command_args[0].compare("free")==0){
+            if (command_args.size()<3){
+                printf("error: not enough parameters\n");
+            }
+            else {
             freeVariable(std::stoul(command_args[1]), command_args[2], mmu, page_table);
+            }
         }
         //terminate
         else if (command_args[0].compare("terminate")==0){
+            if (command_args.size()<2){
+                printf("error: not enough parameters\n");
+            }
+            else {
             terminateProcess(std::stoul(command_args[1]), mmu, page_table);
+            }
         }
         //print
         else if (command_args[0].compare("print")==0){
-
+            if (command_args.size()<2){
+                printf("error: not enough parameters\n");
+            }
+            else {
             if(command_args[1].compare("mmu")==0){
                 mmu->print();
             }
@@ -98,8 +129,7 @@ int main(int argc, char **argv)
                 page_table->print();
             }
             else if(command_args[1].compare("processes")==0){
-
-
+                mmu->printProcesses();
             }
             else{
                 
@@ -118,6 +148,7 @@ int main(int argc, char **argv)
                 memcpy(&printVar,addr,copySize);
 
                 printf("%d\n",printVar);
+            }
             }
             
         }
@@ -176,6 +207,14 @@ void createProcess(int text_size, int data_size, Mmu *mmu, PageTable *page_table
 
 void allocateVariable(uint32_t pid, std::string var_name, DataType type, uint32_t num_elements, Mmu *mmu, PageTable *page_table)
 {
+    if (mmu->fetchVirtualAddress(pid,var_name)!=-1){
+        printf("error: variable already exists\n");
+        return;
+    }
+    if (!mmu->doesProcessExist(pid)){
+        printf("error: process not found\n");
+        return;
+    }
     int spaceNeeded;
     if(type == DataType::Char){
         spaceNeeded = 1 * num_elements;
@@ -190,15 +229,18 @@ void allocateVariable(uint32_t pid, std::string var_name, DataType type, uint32_
         spaceNeeded = 2 * num_elements;
     }
     int virtualAddress = mmu->findNextAddress(pid,spaceNeeded);
+    if (virtualAddress + spaceNeeded > 67108864){
+        printf("error: allocation would exceed system memory");
+        return;
+    }
     mmu->addVariableToProcess(pid,var_name,type,spaceNeeded,virtualAddress);
     
     int i = 0;
-    //std::cout<<virtualAddress+spaceNeeded<<std::endl;
     while (i <= (virtualAddress+spaceNeeded)/page_table->getPageSize()){
         page_table->addEntry(pid,i);
         i++;
     }
-    //printf("\nVirtual address: %d\n",virtualAddress);
+    
     
     
 }
@@ -244,10 +286,16 @@ void freeVariable(uint32_t pid, std::string var_name, Mmu *mmu, PageTable *page_
 
 void terminateProcess(uint32_t pid, Mmu *mmu, PageTable *page_table)
 {
+    if (!mmu->doesProcessExist(pid)){
+        printf("error: process not found\n");
+        return;
+    }
     // TODO: implement this!
     //   - remove process from MMU
     mmu->terminateProcess(pid);
     //   - free all pages associated with given process
+    page_table->removeProcess(pid);
+
 }
 void splitString(std::string text, char d, std::vector<std::string>& result)
 {

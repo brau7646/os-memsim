@@ -151,10 +151,7 @@ bool Mmu::doesProcessExist(uint32_t pid)
             return true;
         }
     }
-<<<<<<< HEAD
-    //std::cout<<position<<std::endl;
-    int numVars = _processes[position]->variables.size();
-    return _processes[position]->variables[numVars-1]->virtual_address+_processes[position]->variables[numVars-1]->size-1;
+    return false;
 }
 
 uint8_t Mmu::getVarDataType(uint32_t pid, std::string var_name){
@@ -188,7 +185,6 @@ uint8_t Mmu::getVarDataType(uint32_t pid, std::string var_name){
     }
     return -1;
 
-=======
     return false;
 }
 void Mmu::printProcesses()
@@ -196,5 +192,4 @@ void Mmu::printProcesses()
     for (int i = 0; i < _processes.size(); i++){
         std::cout<<_processes[i]->pid<<std::endl;
     }
->>>>>>> 175ab85825f4e564a69b85bdb065983f8bac4319
 }

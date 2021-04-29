@@ -63,26 +63,20 @@ void Mmu::print()
     {
         for (j = 0; j < _processes[i]->variables.size(); j++)
         {
-            /*
+
             if(_processes[i]->variables[j]->name.compare("<FREE SPACE>") == 0) //it is free space
             {
 
-            std::cout << _processes[i]->pid << " | " << _processes[i]->variables[j]->name << " | " << _processes[i]->variables[j]->virtual_address;
-            std::cout << " | " << _processes[i]->variables[j]->size << std::endl;
+            std::cout << _processes[i]->pid << " | " << _processes[i]->variables[j]->name << " | " << _processes[i]->variables[j]->virtual_address << " | " << _processes[i]->variables[j]->size;
 
             }
-            */
             // TODO: print all variables (excluding <FREE_SPACE> entries)
             if (_processes[i]->variables[j]->name.compare("<FREE_SPACE>") != 0)
             {
-                printf(" %3u | %13s |",
+                printf(" %3u | %13s | %12u | %4u\n",
                 _processes[i]->pid,
-                _processes[i]->variables[j]->name.c_str()
-                );
-                printf(" %#012x |",
-                _processes[i]->variables[j]->virtual_address
-                );
-                printf(" %10u\n",
+                _processes[i]->variables[j]->name.c_str(),
+                _processes[i]->variables[j]->virtual_address,
                 _processes[i]->variables[j]->size);
             }
             
@@ -96,6 +90,7 @@ void Mmu::terminateProcess(uint32_t pid)
     for (int i=0; i<_processes.size(); i++){
         if (_processes[i]->pid == pid){
             _processes.erase(std::find(_processes.begin(),_processes.end(),_processes[i]));
+            //position = std::find(_processes.begin(),_processes.end(),_processes[i]);
         }
     }
 }
@@ -144,14 +139,17 @@ uint32_t Mmu::findNextAddress(uint32_t pid, uint32_t size)
     }
     return 0;
 }
+
 bool Mmu::doesProcessExist(uint32_t pid)
 {
+    int position;
     for (int i = 0; i < _processes.size(); i++){
         if (_processes[i]->pid == pid){
             return true;
+            position =i;
         }
     }
-<<<<<<< HEAD
+
     //std::cout<<position<<std::endl;
     int numVars = _processes[position]->variables.size();
     return _processes[position]->variables[numVars-1]->virtual_address+_processes[position]->variables[numVars-1]->size-1;
@@ -187,14 +185,13 @@ uint8_t Mmu::getVarDataType(uint32_t pid, std::string var_name){
         }
     }
     return -1;
-
-=======
-    return false;
 }
-void Mmu::printProcesses()
+
+    void Mmu::printProcesses()
 {
     for (int i = 0; i < _processes.size(); i++){
         std::cout<<_processes[i]->pid<<std::endl;
     }
->>>>>>> 175ab85825f4e564a69b85bdb065983f8bac4319
+
+
 }

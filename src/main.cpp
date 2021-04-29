@@ -272,7 +272,7 @@ void setVariable(uint32_t pid, std::string var_name, uint32_t offset, void *valu
     memcpy(&printVar,add,dataSize);
     //memcpy(printVar,(&memory+addr),sizeof(&memory+addr));
     int* test = (int*)printVar;
-    printf("%p\n",printVar);
+    printf("%d\n",*test);
     //   * note: this function only handles a single element (i.e. you'll need to call this within a loop when setting
     //           multiple elements of an array) 
 }
@@ -281,6 +281,21 @@ void freeVariable(uint32_t pid, std::string var_name, Mmu *mmu, PageTable *page_
 {
     // TODO: implement this!
     //   - remove entry from MMU
+    uint32_t vA = mmu->fetchVirtualAddress(pid,var_name);
+
+    if (!mmu->doesProcessExist(pid)){
+        printf("error: process not found\n");
+        return;
+    }
+    if(vA == -1){//the entry does not exist
+        puts("Error: the entry does not exist");
+        return;
+    }
+    else{ // remove it
+        int pagenum = vA/page_table->getPageSize();
+        page_table->removeEntry(pid,0);
+
+    }
     //   - free page if this variable was the only one on a given page
 }
 

@@ -61,6 +61,17 @@ void PageTable::addEntry(uint32_t pid, int page_number)
 
 }
 
+void PageTable::removeEntry(uint32_t pid, int pagenumber){
+    std::string entry = std::to_string(pid) + "|" + std::to_string(pagenumber);
+    int total = _table.count(entry);
+    printf("ttoal is %d\n", total);
+
+}
+
+
+
+
+
 int PageTable::getPhysicalAddress(uint32_t pid, uint32_t virtual_address)
 {
     // Convert virtual address to page_number and page_offset

@@ -94,8 +94,49 @@ int main(int argc, char **argv)
                 printf("error: not enough parameters\n");
             }
             else {
-            setVariable(std::stoul(command_args[1]), command_args[2], std::stoul(command_args[3]), (void*)(command_args[4].c_str()), mmu, page_table, memory);
+            //std::cout<<(command_args[4].c_str())<<std::endl;
+            DataType type = mmu->getType(std::stoul(command_args[1]),command_args[2]);
+            int offset = std::stoul(command_args[3]);
+            for (int i = 4; i < command_args.size(); i++){
+                if(type == DataType::Char){
+                    const char * valueArr= command_args[i].c_str();
+                    char value = valueArr[0];
+                    setVariable(std::stoul(command_args[1]), command_args[2], offset, &value, mmu, page_table, memory);
+                    offset++;
+
+                }
+                else if (type == DataType::Short){
+                    short value = std::stoi(command_args[i].c_str());
+                    setVariable(std::stoul(command_args[1]), command_args[2], offset, &value, mmu, page_table, memory);
+                    offset++;
+                }
+                else if (type == DataType::Int){
+                    int value = std::stoi(command_args[i].c_str());
+                    setVariable(std::stoul(command_args[1]), command_args[2], offset, &value, mmu, page_table, memory);
+                    offset++;
+                }
+                else if (type == DataType::Float){
+                    float value = std::stof(command_args[i].c_str());
+                    setVariable(std::stoul(command_args[1]), command_args[2], offset, &value, mmu, page_table, memory);
+                    offset++;
+                }
+                else if (type == DataType::Long){
+                    long value = std::stol(command_args[i].c_str());
+                    setVariable(std::stoul(command_args[1]), command_args[2], offset, &value, mmu, page_table, memory);
+                    offset++;
+                } 
+                else{
+                    double value = std::stod(command_args[i].c_str());
+                    setVariable(std::stoul(command_args[1]), command_args[2], offset, &value, mmu, page_table, memory);
+                    offset++;
+                }
+
             }
+            
+
+            //Char, Short, Int, Float, Long, Double, FreeSpace
+            }
+            
         }
         //free
         else if (command_args[0].compare("free")==0){
@@ -142,12 +183,59 @@ int main(int argc, char **argv)
                 //memory[var_physical_address];
                 //std::cout<<memory[var_physical_address].c_str()<<std::endl;
                 //printf("%p\n",memory[var_physical_address]);
-                void* addr = memory + var_physical_address;
+                void* addr = (uint8_t*)memory + var_physical_address;
                 void* printVar;
                 uint8_t copySize = mmu->getVarDataType(std::stoi(pid_args[0]),pid_args[1]);
-                memcpy(&printVar,addr,copySize);
+                
+                //memcpy(&printVar,addr,copySize);
+                DataType type = mmu->getType(std::stoi(pid_args[0]),pid_args[1]);
+                int variableSize = mmu->getVarSize(std::stoi(pid_args[0]),pid_args[1]);
+                int numElements = variableSize/copySize;
+                for (int i=0; i < numElements; i++)
+                {
+                    if(type == DataType::Char){
+                        char printVar;
+                        memcpy(&printVar,(uint8_t*)addr+(i*copySize),copySize*(i+1));
+                        std::cout<<printVar;
+                    }
+                    else if (type == DataType::Short){
+                        short printVar;
+                        memcpy(&printVar,(uint8_t*)addr+(i*copySize),copySize*(i+1));
+                        std::cout<<printVar;
+                    }
+                    else if (type == DataType::Int){
+                        int printVar;
+                        memcpy(&printVar,(uint8_t*)addr+(i*copySize),copySize*(i+1));
+                        std::cout<<printVar;
+                    }
+                    else if (type == DataType::Float){
+                        float printVar;
+                        memcpy(&printVar,(uint8_t*)addr+(i*copySize),copySize*(i+1));
+                        std::cout<<printVar;
+                    }
+                    else if (type == DataType::Long){
+                        long printVar;
+                        memcpy(&printVar,(uint8_t*)addr+(i*copySize),copySize*(i+1));
+                        std::cout<<printVar;
+                    } 
+                    else{
+                        double printVar;
+                        memcpy(&printVar,(uint8_t*)addr+(i*copySize),copySize*(i+1));
+                        std::cout<<printVar;
+                        
+                    }
+                    if (i != numElements-1){
+                        printf(", ");
+                    }
+                    else {
+                        printf("\n");
+                    }
+                    
+                }
+                
 
-                printf("%d\n",printVar);
+                //printf("%d\n",printVar);
+
             }
             }
             
@@ -255,19 +343,27 @@ void setVariable(uint32_t pid, std::string var_name, uint32_t offset, void *valu
         puts("error: variable not found");
         return;
     }
-    uint32_t addr = vA + offset;
+    uint8_t dataSize = mmu->getVarDataType(pid, var_name);
+    uint32_t addr = vA + (offset * dataSize);
     int physicalAddress = page_table->getPhysicalAddress(pid,addr);
     //printf("%d\n",physicalAddress);
-    uint8_t dataSize = mmu->getVarDataType(pid, var_name);
+    
     void* add = (uint8_t*)memory + physicalAddress;
+    //std::cout<< "physical: " << physicalAddress<< " add:" << add << std::endl;
+    //std::cout<< "uint: " << (uint8_t*)memory<< " &:" << &memory << std::endl;
     //void* writeLoc = add + addr;
     //   - insert `value` into `memory` at physical address
-   
+    
     //printf("%ld\n", sizeof(value));
-    //printf("%p\n", value)
+    //std::cout<<value<<std::endl;
+    
     memcpy(add,value,dataSize);
-   
+    
+    void* printVar;
+    memcpy(&printVar,add,dataSize);
+    
     //copy from mem into some var for printing
+    /*
     void* printVar;
     memcpy(&printVar,add,dataSize);
     //memcpy(printVar,(&memory+addr),sizeof(&memory+addr));
@@ -275,6 +371,7 @@ void setVariable(uint32_t pid, std::string var_name, uint32_t offset, void *valu
     printf("%d\n",*test);
     //   * note: this function only handles a single element (i.e. you'll need to call this within a loop when setting
     //           multiple elements of an array) 
+    */
 }
 
 void freeVariable(uint32_t pid, std::string var_name, Mmu *mmu, PageTable *page_table)

@@ -149,10 +149,7 @@ bool Mmu::doesProcessExist(uint32_t pid)
             position =i;
         }
     }
-
-    //std::cout<<position<<std::endl;
-    int numVars = _processes[position]->variables.size();
-    return _processes[position]->variables[numVars-1]->virtual_address+_processes[position]->variables[numVars-1]->size-1;
+    return false;
 }
 
 uint8_t Mmu::getVarDataType(uint32_t pid, std::string var_name){
@@ -187,11 +184,41 @@ uint8_t Mmu::getVarDataType(uint32_t pid, std::string var_name){
     return -1;
 }
 
-    void Mmu::printProcesses()
+void Mmu::printProcesses()
 {
     for (int i = 0; i < _processes.size(); i++){
         std::cout<<_processes[i]->pid<<std::endl;
     }
-
-
+}
+DataType Mmu::getType(uint32_t pid, std::string var_name)
+{
+    int position;
+    for (int i=0; i<_processes.size(); i++){
+        if (_processes[i]->pid == pid){
+            //_processes.erase(std::find(_processes.begin(),_processes.end(),_processes[i]));
+            position = i;
+        }
+    }
+    for (int i=0; i<_processes[position]->variables.size(); i++){
+        if (_processes[position]->variables[i]->name.compare(var_name)==0){
+            return _processes[position]->variables[i]->type;
+        }
+    }
+    return DataType::FreeSpace;
+}
+int Mmu::getVarSize(uint32_t pid, std::string var_name)
+{
+    int position;
+    for (int i=0; i<_processes.size(); i++){
+        if (_processes[i]->pid == pid){
+            //_processes.erase(std::find(_processes.begin(),_processes.end(),_processes[i]));
+            position = i;
+        }
+    }
+    for (int i=0; i<_processes[position]->variables.size(); i++){
+        if (_processes[position]->variables[i]->name.compare(var_name)==0){
+            return _processes[position]->variables[i]->size;
+        }
+    }
+    return 0;
 }

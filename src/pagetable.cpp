@@ -61,11 +61,32 @@ void PageTable::addEntry(uint32_t pid, int page_number)
 
 }
 
-void PageTable::removeEntry(uint32_t pid, int pagenumber){
-    std::string entry = std::to_string(pid) + "|" + std::to_string(pagenumber);
-    int total = _table.count(entry);
-    printf("ttoal is %d\n", total);
+void PageTable::removeEntry(uint32_t pid, std::string var_name, int pagenumber){
 
+
+    std::string entry = std::to_string(pid) + "|" + std::to_string(pagenumber);
+
+     _table.erase(entry);
+    
+    
+
+
+    /*
+    std::vector<std::string> keys = sortedKeys();
+    for (int i = 0; i < keys.size(); i++)
+    {
+        // TODO: print all pages
+        //std::cout<<keys[i]<<" "<<_table[keys[i]]<<std::endl;
+        std::string pid = keys[i].substr(0,keys[i].find('|'));
+        std::string pageNum = keys[i].substr(keys[i].find('|')+1);
+
+        int pN = stoi(pageNum,nullptr,0);
+        if(pN == pagenumber){//we remove it
+
+        }
+        
+    }
+    */
 }
 
 

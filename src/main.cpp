@@ -379,7 +379,7 @@ void freeVariable(uint32_t pid, std::string var_name, Mmu *mmu, PageTable *page_
     // TODO: implement this!
     //   - remove entry from MMU
     uint32_t vA = mmu->fetchVirtualAddress(pid,var_name);
-
+    std::cout << "vSize is " << mmu->getVarSize(pid,var_name) << "\n";
     if (!mmu->doesProcessExist(pid)){
         printf("error: process not found\n");
         return;
@@ -389,10 +389,75 @@ void freeVariable(uint32_t pid, std::string var_name, Mmu *mmu, PageTable *page_
         return;
     }
     else{ // remove it
-        int pagenum = vA/page_table->getPageSize();
-        page_table->removeEntry(pid,0);
+        int varStart = vA/page_table->getPageSize();
+       
+        int varEnd = (vA+mmu->getVarSize(pid, var_name))/page_table->getPageSize();
+        printf("vs is %d\n",mmu->getVarSize(pid,var_name));
+        
+        
+        std::cout << "end is " << varEnd << "\n";
+        std::cout << "start is " << varStart << "\n";
+
+        if(varEnd-varStart >= 1){ //it spans more than one page
+            /*
+            int start = varStart;
+
+            int sMod = vA% page_table->getPageSize();
+            int eMod = (vA + mmu->getVarSize(pid, var_name)) % page_table->getPageSize();
+
+            std::cout << "smod is " << sMod << "\n";
+            std::cout << "emod is " << eMod << "\n";
+
+
+            if(sMod > eMod){ //this means that the variable crosses over into at least one new page
+                puts("deleted");
+                
+                page_table->removeEntry(pid,var_name,varStart+1);
+            }
+            */
+            int currPage = varStart;
+            int currAddr = ((vA / page_table->getPageSize()) +1)* (page_table->getPageSize());
+            std::cout << "currAddr is " << currAddr << "\n";
+            int endAddr = (vA + mmu->getVarSize(pid,var_name));
+            std::cout << "endAddr is " << endAddr << "\n";
+            while(currAddr < endAddr){
+                page_table->removeEntry(pid,var_name,currPage+1);
+                currAddr = currAddr + page_table->getPageSize();
+                std::cout << "currP is " << currPage << "\n";
+                currPage++;
+
+            }
+            //page_table->removeEntry(pid,var_name,varStart+1);
+            /*
+            while(start < varEnd){
+                if(vA%page_table->getPageSize() == 0){//remove the page
+                    puts("in 1");
+                    page_table->removeEntry(pid,var_name,varStart);
+                }
+                else if((vA + mmu->getVarSize(pid,var_name)) % page_table->getPageSize() == 1){
+                    puts("in 2");
+                    int begin = varStart;
+                    while(begin < varEnd){
+
+                        page_table->removeEntry(pid,var_name,begin);
+                        std::cout << "delete\n";
+                        begin++;
+                    }
+                
+                 
+                }
+
+                start++;
+            }
+            */
+
+
+            
+        }
+        
 
     }
+    mmu->setFree(pid,var_name);
     //   - free page if this variable was the only one on a given page
 }
 

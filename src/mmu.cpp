@@ -222,3 +222,26 @@ int Mmu::getVarSize(uint32_t pid, std::string var_name)
     }
     return 0;
 }
+
+void Mmu::setFree(uint32_t pid, std::string var_name){
+
+    int position;
+    for (int i=0; i<_processes.size(); i++){ //find index of the process with pid
+        if (_processes[i]->pid == pid){
+            //_processes.erase(std::find(_processes.begin(),_processes.end(),_processes[i]));
+            position = i;
+        }
+    }
+
+    for (int i=0; i<_processes[position]->variables.size(); i++){
+        if (_processes[position]->variables[i]->name.compare(var_name)==0){
+            
+            _processes[position]->variables[i]->name = "<FREE_SPACE>";
+            _processes[position]->variables[i]->type = DataType::FreeSpace;
+        }
+    }
+
+    
+    
+
+}

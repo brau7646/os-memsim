@@ -41,6 +41,7 @@ public:
     DataType getType(uint32_t pid, std::string var_name);
     void printProcesses();
     int getVarSize(uint32_t pid, std::string var_name);
+    void setFree(uint32_t pid, std::string var_name);
 };
 
 #endif // __MMU_H_

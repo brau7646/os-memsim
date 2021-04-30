@@ -42,6 +42,8 @@ public:
     void printProcesses();
     int getVarSize(uint32_t pid, std::string var_name);
     void setFree(uint32_t pid, std::string var_name);
+    int getProcessesSize();
+    std::vector<Process*> getProcesses();
 };
 
 #endif // __MMU_H_

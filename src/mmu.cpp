@@ -245,3 +245,13 @@ void Mmu::setFree(uint32_t pid, std::string var_name){
     
 
 }
+
+int Mmu::getProcessesSize(){
+
+    return _processes.size();
+}
+
+std::vector<Process*> Mmu::getProcesses(){
+    
+    return _processes;
+}

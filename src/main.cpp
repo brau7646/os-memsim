@@ -379,7 +379,7 @@ void freeVariable(uint32_t pid, std::string var_name, Mmu *mmu, PageTable *page_
     // TODO: implement this!
     //   - remove entry from MMU
     uint32_t vA = mmu->fetchVirtualAddress(pid,var_name);
-    std::cout << "vSize is " << mmu->getVarSize(pid,var_name) << "\n";
+    //std::cout << "vSize is " << mmu->getVarSize(pid,var_name) << "\n";
     if (!mmu->doesProcessExist(pid)){
         printf("error: process not found\n");
         return;
@@ -392,40 +392,94 @@ void freeVariable(uint32_t pid, std::string var_name, Mmu *mmu, PageTable *page_
         int varStart = vA/page_table->getPageSize();
        
         int varEnd = (vA+mmu->getVarSize(pid, var_name))/page_table->getPageSize();
-        printf("vs is %d\n",mmu->getVarSize(pid,var_name));
+        //printf("vs is %d\n",mmu->getVarSize(pid,var_name));
         
         
-        std::cout << "end is " << varEnd << "\n";
-        std::cout << "start is " << varStart << "\n";
+        //std::cout << "end is " << varEnd << "\n";
+        //std::cout << "start is " << varStart << "\n";
 
         if(varEnd-varStart >= 1){ //it spans more than one page
-            /*
-            int start = varStart;
 
-            int sMod = vA% page_table->getPageSize();
-            int eMod = (vA + mmu->getVarSize(pid, var_name)) % page_table->getPageSize();
-
-            std::cout << "smod is " << sMod << "\n";
-            std::cout << "emod is " << eMod << "\n";
-
-
-            if(sMod > eMod){ //this means that the variable crosses over into at least one new page
-                puts("deleted");
-                
-                page_table->removeEntry(pid,var_name,varStart+1);
-            }
-            */
+            std::vector<Process*> _processes = mmu->getProcesses();
+            
             int currPage = varStart;
-            int currAddr = ((vA / page_table->getPageSize()) +1)* (page_table->getPageSize());
-            std::cout << "currAddr is " << currAddr << "\n";
+            int currAddr = ((vA / page_table->getPageSize()))* (page_table->getPageSize());
+            //std::cout << "currAddr is " << currAddr << "\n";
             int endAddr = (vA + mmu->getVarSize(pid,var_name));
-            std::cout << "endAddr is " << endAddr << "\n";
-            while(currAddr < endAddr){
-                page_table->removeEntry(pid,var_name,currPage+1);
-                currAddr = currAddr + page_table->getPageSize();
-                std::cout << "currP is " << currPage << "\n";
-                currPage++;
+            int endPage = endAddr/page_table->getPageSize();
+            //std::cout << "endAddr is " << endAddr << "\n";
+            int pageStartAddr = (vA/page_table->getPageSize())*page_table->getPageSize();
+            int pageEndAddr = ((vA+mmu->getVarSize(pid,var_name))/page_table->getPageSize())*page_table->getPageSize();
+            while(currAddr < endAddr){ //iterate thorugh and delete pages
 
+
+                if(currPage == varStart){//may not remove the first page
+                    //puts("in frist page\n");
+                    bool dontRemove = false;
+                    int i ,j;
+                    for (i = 0; i < mmu->getProcessesSize(); i++)
+                    {
+                        for (j = 0; j < _processes[i]->variables.size(); j++)
+                        {
+                           
+                            if (_processes[i]->variables[j]->name.compare("<FREE_SPACE>") != 0)
+                            {
+                               
+                                if((_processes[i]->variables[j]->virtual_address + _processes[i]->variables[j]->size) > pageStartAddr && _processes[i]->variables[j]->virtual_address + _processes[i]->variables[j]->size < vA){
+                                    //of there is a variable on the page that the variable being freed is on dont remove
+                                    dontRemove = true;
+                                }
+                                
+                            }
+            
+                        }
+
+                    }
+                    if (!dontRemove){
+
+                        page_table->removeEntry(pid,var_name,currPage+1);
+                    }
+
+                    //std::cout << "dont remove is " << dontRemove << "\n";
+                }
+                else if(currPage==endPage){
+
+                    bool dontRemove = false;
+                    int i ,j;
+                    for (i = 0; i < mmu->getProcessesSize(); i++)
+                    {
+                        for (j = 0; j < _processes[i]->variables.size(); j++)
+                        {
+                           
+                            if (_processes[i]->variables[j]->name.compare("<FREE_SPACE>") != 0)
+                            {
+                               
+                                if((_processes[i]->variables[j]->virtual_address + _processes[i]->variables[j]->size) > endAddr && _processes[i]->variables[j]->virtual_address + _processes[i]->variables[j]->size < pageEndAddr){
+                                    //of there is a variable on the page that the variable being freed is on dont remove
+                                    dontRemove = true;
+                                }
+                                
+                            }
+            
+                        }
+
+                    }
+                    if (!dontRemove){
+
+                        page_table->removeEntry(pid,var_name,currPage+1);
+                    }
+
+
+                }
+                else{ //if middle page we definately remove it
+                    page_table->removeEntry(pid,var_name,currPage);
+                    
+                    
+                }
+
+                currPage++;
+                currAddr = currAddr + page_table->getPageSize();
+                //std::cout << "currP is " << currPage << "\n";
             }
             //page_table->removeEntry(pid,var_name,varStart+1);
             /*
